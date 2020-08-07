@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/> 
+<meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+
+<title>Tennis from The 90s</title> 
+
+<meta name="viewport" content="width=device-width, initial-scale=1" /> 
+
+<link rel="stylesheet" type="text/css" media="screen" />
+
+<script type="text/javascript">
+var canvas;
+        var canvasContext;
+        var ballX = 50;
+        var ballY = 4;
+        var ballSpeedX = 6;
+        var ballSpeedY = 4;
+
+        var paddle1Y = 250;
+        var paddle2Y = 250;
+        const PADDLE_HEIGHT = 120;
+        const PADDLE_THICKNESS = 10;
+
+        var player1Score = 0;
+        var player2Score = 0;
+
+        var colorP1 = colorP2 = "white";
+
+
+         function calculatemousePos(evnt){
+             var rect = canvas.getBoundingClientRect();
+             var root = document.documentElement;
+             var mouseX = evnt.clientX - rect.left - root.scrollLeft;
+             var mouseY = evnt.clientY - rect.top - root.scrollTop;
+             return{
+                 x:mouseX,
+                 y:mouseY
+             };
+         }
+
+
+        function ballReset() {
+            ballSpeedX = -ballSpeedX;
+            ballX = canvas.width / 2;
+            ballY = canvas.height / 2;
+        }
+
+        window.onload = function () {
+            canvas = document.getElementById('myCanvas');
+            canvasContext = canvas.getContext('2d');
+            var FPS = 90;
+            setInterval(function () {
+                gameGraphics();
+                gameMovements();
+            }, 1000 / FPS);
+
+             canvas.addEventListener('mousemove',
+                 function(evnt){
+                     var mousePos = calculatemousePos(evnt);
+                     paddle1Y = mousePos.y - (PADDLE_HEIGHT/2);
+
+                 });
+
+        }
+
+
+        function computerPaddle() {
+            var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT / 2);
+            if (paddle2YCenter < (ballY - 40)) {
+                paddle2Y += Math.round(Math.random() * 10);
+            }
+            else if (paddle2YCenter > (ballY + 40)) {
+                paddle2Y -= Math.round(Math.random() * 8);
+            }
+        }
+
+        function gameMovements() {
+            computerPaddle();
+            ballX = ballX + ballSpeedX;
+            ballY = ballY + ballSpeedY;
+            if (ballX < 12) {
+                if (ballY > paddle1Y && ballY < paddle1Y + PADDLE_HEIGHT) {
+                    ballSpeedX = -ballSpeedX;
+                }
+                else {
+                    ballReset();
+                    player2Score += 1;
+                    colorP2 = "green";
+                    colorP1 = "red";
+                }
+            }
+            else if (ballX > (canvas.width - 20)) {
+                if (ballY > paddle2Y && ballY < paddle2Y + PADDLE_HEIGHT) {
+                    ballSpeedX = -ballSpeedX;
+                }
+                else {
+                    ballReset();
+                    player1Score += 1;
+                    colorP1 = "green";
+                    colorP2 = "red";
+                }
+            }
+
+
+            if (ballY < 0) {
+                ballSpeedY = -ballSpeedY;
+            }
+            else if (ballY > canvas.height) {
+                ballSpeedY = -ballSpeedY;
+            }
+        }
+
+     
+
+
+        function gameGraphics() {
+            canvasContext.fillStyle = 'black';
+            canvasContext.fillRect(0, 0, canvas.width, canvas.height);
+            canvasContext.fillStyle = 'white';
+            canvasContext.fillRect(ballX, ballY, 10, 10);
+            canvasContext.fillStyle = colorP1;
+            canvasContext.fillRect(5, paddle1Y, PADDLE_THICKNESS, PADDLE_HEIGHT);
+            canvasContext.fillStyle = colorP2;
+            canvasContext.fillRect(canvas.width - 15, paddle2Y, PADDLE_THICKNESS, PADDLE_HEIGHT);
+            canvasContext.font = "20px Rockwell";
+            canvasContext.fillStyle = colorP1;
+            canvasContext.fillText("PLAYER 1 -_-", canvas.width * 0.32, canvas.height / 2);
+            canvasContext.fillText(player1Score, canvas.width * 0.35, ((canvas.height / 2) + 30));
+            canvasContext.fillStyle = colorP2;
+            canvasContext.fillText("PLAYER 2 ^_^", canvas.width * 0.56, canvas.height / 2);
+            canvasContext.fillText(player2Score, canvas.width * 0.594, ((canvas.height / 2) + 30));
+            canvasContext.fillStyle = "aqua";
+            for (var i = 15; i <= 2200; i += 25) {
+                canvasContext.fillText("|", canvas.width / 2, i);
+            }
+            
+            
+        } 
+</script>
+<style>
+		html, body {
+			width: 100%;
+			height: 100%;
+			margin: 0px;
+			border: 0;
+			overflow: hidden; /*  Disable scrollbars */
+			display: block;  /* No floating content on sides */
+		}
+</style>
+</head>
+
+
+<body bgcolor="cyan" oncontextmenu="return false">
+<canvas id="myCanvas" width="1920" height="1080" style = 'position: absolute; left: 0px; top: 0px; '></canvas>
+	
+	<script>
+		(function() {
+			var 
+				// Obtain a reference to the canvas element using its id.
+				htmlCanvas = document.getElementById('myCanvas'),
+
+			  	context = htmlCanvas.getContext('2d');
+
+			// Started listening
+			initialize();
+
+			function initialize() {
+				window.addEventListener('resize', resizeCanvas, false);
+				
+				resizeCanvas();
+			}
+
+			function resizeCanvas() {
+				htmlCanvas.width = window.innerWidth;
+				htmlCanvas.height = window.innerHeight;
+				redraw();
+			}
+		
+		})();
+	</script>
+	
+</body>
+</html>
+
